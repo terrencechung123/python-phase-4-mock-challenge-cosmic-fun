@@ -1,6 +1,7 @@
 from flask import Flask, request, make_response, jsonify
 from flask_cors import CORS
 from flask_migrate import Migrate
+from flask_restful import Api, Resource
 
 from models import db, Scientist, Planet, Mission
 
@@ -14,12 +15,17 @@ migrate = Migrate(app, db)
 
 db.init_app(app)
 
+api = Api(app)
 
-@app.route('/')
-def index():
-    response = make_response(
-        {"message": "Hello Scientists!"}
-    )
+class Scientists(Resource):
+    pass
+api.add_resource(Scientists,'/scientists')
+class Planets(Resource):
+    pass
+api.add_resource(Planets,'/planets')
+class Missions(Resource):
+    pass
+api.add_resource(Missions,'/missions')
 
 
 if __name__ == '__main__':
