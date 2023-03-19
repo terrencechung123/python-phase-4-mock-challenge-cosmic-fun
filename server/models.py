@@ -25,6 +25,8 @@ class Mission(db.Model, SerializerMixin):
     scientist=db.relationship('Scientist', back_populates='missions')
     planet=db.relationship('Planet', back_populates='missions')
 
+    serialize_rules=('-scientist.missions',)
+
     @validates('name')
     def validate_name(self,key,value):
         if not value:
@@ -57,6 +59,7 @@ class Scientist(db.Model, SerializerMixin):
     missions = db.relationship('Mission',back_populates='scientist')
     planets = association_proxy('missions', 'planet')
 
+
     @validates('name')
     def validate_name(self,key,value):
         if not value:
@@ -68,6 +71,7 @@ class Scientist(db.Model, SerializerMixin):
             raise ValueError('Must have a field of study')
         return value
 
+    serialize_rules = ('-missions','-created_at', '-updated_at', '-planets.created_at', '-planets.updated_at')
 
 class Planet(db.Model, SerializerMixin):
     __tablename__ = 'planets'
@@ -80,5 +84,7 @@ class Planet(db.Model, SerializerMixin):
     created_at = db.Column(db.DateTime, server_default=func.now())
     updated_at = db.Column(db.DateTime, default=db.func.now(), onupdate=db.func.now())
 
-    missions = db.relationship('Mission', back_populates='planet')
+    missions = db.relationship('Mission', back_populates='planet',  cascade="all,delete, delete-orphan")
     scientists = association_proxy('missions', 'scientist')
+
+    serialize_rules= ('-missions',)

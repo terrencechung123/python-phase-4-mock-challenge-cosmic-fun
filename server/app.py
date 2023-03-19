@@ -18,15 +18,38 @@ db.init_app(app)
 api = Api(app)
 
 class Scientists(Resource):
-    pass
+    def get(self):
+        scientists = Scientist.query.all()
+        scientists_dict_list = [scientist.to_dict() for scientist in scientists]
+        response = make_response(
+            scientists_dict_list,
+            200
+        )
+        return response
 api.add_resource(Scientists,'/scientists')
+
+class ScientistById(Resource):
+    def get(self, id):
+        scientist = Scientist.query.filter_by(id=id).first()
+        if not scientist:
+            return make_response({
+                "error": "Scientist not found"
+            }, 404)
+        response = make_response(
+            scientist.to_dict(rules=('planets',)),
+            200
+        )
+        return response
+api.add_resource(ScientistById, '/scientists/<int:id>')
+
 class Planets(Resource):
     pass
 api.add_resource(Planets,'/planets')
+
 class Missions(Resource):
     pass
 api.add_resource(Missions,'/missions')
 
 
 if __name__ == '__main__':
-    app.run(port=5555)
+    app.run(port=5000)
