@@ -26,6 +26,29 @@ class Scientists(Resource):
             200
         )
         return response
+    def post(self):
+        data = request.get_json()
+        try:
+            scientist = Scientist(
+                name=data['name'],
+                field_of_study=data['field_of_study'],
+                avatar=data['avatar']
+            )
+            db.session.add(scientist)
+            db.session.commit()
+        except Exception as e:
+            message = {
+                "errors": [e.__str__()]
+            }
+            return make_response(
+                message,
+                422
+            )
+        response = make_response(
+            scientist.to_dict(),
+            201
+        )
+        return make_response
 api.add_resource(Scientists,'/scientists')
 
 class ScientistById(Resource):
