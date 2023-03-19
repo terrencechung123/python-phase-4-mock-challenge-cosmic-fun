@@ -87,4 +87,4 @@ class Planet(db.Model, SerializerMixin):
     missions = db.relationship('Mission', back_populates='planet',  cascade="all,delete, delete-orphan")
     scientists = association_proxy('missions', 'scientist')
 
-    serialize_rules= ('-missions',)
+    serialize_rules= ('-missions','-created_at','-updated_at')
